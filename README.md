@@ -3,7 +3,7 @@
 ## Installation
 
 ```sh
-$ go get github.com/roushou/dexscreener
+go get github.com/roushou/dexscreener
 ```
 
 ## Usage
