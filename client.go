@@ -9,13 +9,16 @@ import (
 
 const DefaultApiBaseURL = "https://api.dexscreener.com"
 
+// Client represents a client for interacting with the DexScreener API
 type Client struct {
 	BaseURL    string
 	httpClient *http.Client
 }
 
+// Option defines a function that can customize the Client
 type Option func(*Client)
 
+// NewClient creates a new DexScreener client with default settings and optional configurations
 func NewClient(options ...Option) *Client {
 	client := &Client{
 		BaseURL:    DefaultApiBaseURL,
@@ -29,12 +32,14 @@ func NewClient(options ...Option) *Client {
 	return client
 }
 
+// WithBaseURL returns an Option that sets the base URL for API requests
 func WithBaseURL(baseURL string) Option {
 	return func(c *Client) {
 		c.BaseURL = baseURL
 	}
 }
 
+// newRequest constructs a new HTTP request for the DexScreener API
 func (c *Client) newRequest(method string, path string) (*http.Request, error) {
 	url := c.BaseURL + path
 	req, err := http.NewRequest(method, url, nil)
@@ -44,6 +49,7 @@ func (c *Client) newRequest(method string, path string) (*http.Request, error) {
 	return req, nil
 }
 
+// doRequest sends an HTTP request and decodes the response into the provided interface
 func (c *Client) doRequest(req *http.Request, out interface{}) error {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -76,6 +82,7 @@ type ProfileLink struct {
 	Url   string `json:"url"`
 }
 
+// GetTokenProfiles fetches the latest token profiles
 func (c *Client) GetTokenProfiles() ([]TokenProfile, error) {
 	req, err := c.newRequest(http.MethodGet, "/token-profiles/latest/v1")
 	if err != nil {
@@ -93,7 +100,7 @@ type TokenBoosted struct {
 	TotalAmount uint64 `json:"totalAmount"`
 }
 
-// Retrieves boosted tokens from the given endpoint.
+// getBoostedTokens is a helper function to retrieve boosted tokens from a specific endpoint
 func (c *Client) getBoostedTokens(endpoint string) ([]TokenBoosted, error) {
 	req, err := c.newRequest(http.MethodGet, endpoint)
 	if err != nil {
@@ -105,12 +112,12 @@ func (c *Client) getBoostedTokens(endpoint string) ([]TokenBoosted, error) {
 	return boosts, err
 }
 
-// Retrieves the latest boosted tokens.
+// GetLatestBoostedTokens fetches the most recently boosted tokens
 func (c *Client) GetLatestBoostedTokens() ([]TokenBoosted, error) {
 	return c.getBoostedTokens("/token-boosts/latest/v1")
 }
 
-// Retrieves the most active boosted tokens.
+// GetMostActiveBoostedTokens fetches the most active boosted tokens
 func (c *Client) GetMostActiveBoostedTokens() ([]TokenBoosted, error) {
 	return c.getBoostedTokens("/token-boosts/top/v1")
 }
@@ -121,7 +128,7 @@ type TokenOrder struct {
 	PaymentTimestamp uint64 `json:"paymentTimestamp"`
 }
 
-// Retrieves token orders for a specific chain and token address.
+// GetTokenOrders fetches token orders for a specific chain and token address.
 func (c *Client) GetTokenOrders(chainId string, tokenAddress string) ([]TokenOrder, error) {
 	path := fmt.Sprintf("/orders/v1/%s/%s", chainId, tokenAddress)
 	req, err := c.newRequest(http.MethodGet, path)
@@ -212,7 +219,7 @@ type TokenPairs struct {
 	Pairs         []TokenPair `json:"pairs"`
 }
 
-// Retrieves token pairs by chain ID and pair ID.
+// GetTokenPairsByChain fetches token pairs by chain ID and pair ID.
 func (c *Client) GetTokenPairsByChain(chainId string, pairId string) (*TokenPairs, error) {
 	path := fmt.Sprintf("/latest/dex/pairs/%s/%s", chainId, pairId)
 	req, err := c.newRequest(http.MethodGet, path)
@@ -225,7 +232,7 @@ func (c *Client) GetTokenPairsByChain(chainId string, pairId string) (*TokenPair
 	return &pairs, err
 }
 
-// Retrieves token pairs for a token address.
+// GetTokenPairs fetches token pairs for a token address.
 func (c *Client) GetTokenPairs(tokenAddress string) (*TokenPairs, error) {
 	req, err := c.newRequest(http.MethodGet, "/latest/dex/tokens/"+tokenAddress)
 	if err != nil {
@@ -237,7 +244,7 @@ func (c *Client) GetTokenPairs(tokenAddress string) (*TokenPairs, error) {
 	return &pairs, err
 }
 
-// Search for pairs matching the query
+// SearchPairs fetches token pairs matching the query
 func (c *Client) SearchPairs(query string) (*TokenPairs, error) {
 	req, err := c.newRequest(http.MethodGet, "/latest/dex/search?q="+query)
 	if err != nil {
