@@ -67,19 +67,17 @@ func (c *Client) doRequest(req *http.Request, out interface{}) error {
 }
 
 type TokenProfile struct {
-	Url          string        `json:"url"`
-	ChainId      string        `json:"chainId"`
-	TokenAddress string        `json:"tokenAddress"`
-	Icon         string        `json:"icon"`
-	Header       string        `json:"header"`
-	Description  string        `json:"description"`
-	Links        []ProfileLink `json:"links"`
-}
-
-type ProfileLink struct {
-	Type  string `json:"type"`
-	Label string `json:"label"`
-	Url   string `json:"url"`
+	URL          string `json:"url"`
+	ChainId      string `json:"chainId"`
+	TokenAddress string `json:"tokenAddress"`
+	Icon         string `json:"icon"`
+	Header       string `json:"header"`
+	Description  string `json:"description"`
+	Links        []struct {
+		Type  string `json:"type"`
+		Label string `json:"label"`
+		Url   string `json:"url"`
+	} `json:"links"`
 }
 
 // GetTokenProfiles fetches the latest token profiles
@@ -141,76 +139,76 @@ func (c *Client) GetTokenOrders(chainId string, tokenAddress string) ([]TokenOrd
 	return orders, err
 }
 
-type TokenInfo struct {
-	Address string `json:"address"`
-	Name    string `json:"name"`
-	Symbol  string `json:"symbol"`
-}
-
-type Liquidity struct {
-	Usd   float64 `json:"usd"`
-	Base  float64 `json:"base"`
-	Quote float64 `json:"quote"`
-}
-
-type Social struct {
-	Platform string `json:"platform"`
-	Handle   string `json:"handle"`
-}
-
-type Website struct {
-	URL string `json:"url"`
-}
-
-type Info struct {
-	ImageURL string    `json:"imageUrl"`
-	Websites []Website `json:"websites"`
-	Socials  []Social  `json:"socials"`
-}
-
-type Boosts struct {
-	Active int `json:"active"`
-}
-
-type TimeframeStats struct {
-	H24 float64 `json:"h24"`
-	H6  float64 `json:"h6"`
-	H1  float64 `json:"h1"`
-	M5  float64 `json:"m5"`
-}
-
-type TimeframeTransactions struct {
-	M5  TradeCounts `json:"m5"`
-	H6  TradeCounts `json:"h6"`
-	H1  TradeCounts `json:"h1"`
-	H24 TradeCounts `json:"h24"`
-}
-
-type TradeCounts struct {
-	Buys  uint64 `json:"buys"`
-	Sells uint64 `json:"sells"`
-}
-
 type TokenPair struct {
-	SchemaVersion string                `json:"schemaVersion"`
-	ChainID       string                `json:"chainId"`
-	DexID         string                `json:"dexId"`
-	URL           string                `json:"url"`
-	PairAddress   string                `json:"pairAddress"`
-	Labels        []string              `json:"labels"`
-	BaseToken     TokenInfo             `json:"baseToken"`
-	QuoteToken    TokenInfo             `json:"quoteToken"`
-	PriceNative   string                `json:"priceNative"`
-	PriceUSD      string                `json:"priceUsd"`
-	Liquidity     Liquidity             `json:"liquidity"`
-	FDV           float64               `json:"fdv"`
-	MarketCap     float64               `json:"marketCap"`
-	PairCreatedAt int64                 `json:"pairCreatedAt"`
-	Info          Info                  `json:"info"`
-	Boosts        Boosts                `json:"boosts"`
-	Volume        TimeframeStats        `json:"volume"`
-	PriceChange   TimeframeStats        `json:"priceChange"`
-	Transactions  TimeframeTransactions `json:"txns"`
+	SchemaVersion string   `json:"schemaVersion"`
+	ChainID       string   `json:"chainId"`
+	DexID         string   `json:"dexId"`
+	URL           string   `json:"url"`
+	PairAddress   string   `json:"pairAddress"`
+	Labels        []string `json:"labels"`
+	BaseToken     struct {
+		Address string `json:"address"`
+		Name    string `json:"name"`
+		Symbol  string `json:"symbol"`
+	} `json:"baseToken"`
+	QuoteToken struct {
+		Address string `json:"address"`
+		Name    string `json:"name"`
+		Symbol  string `json:"symbol"`
+	} `json:"quoteToken"`
+	PriceNative string `json:"priceNative"`
+	PriceUSD    string `json:"priceUsd"`
+	Liquidity   struct {
+		USD   float64 `json:"usd"`
+		Base  float64 `json:"base"`
+		Quote float64 `json:"quote"`
+	} `json:"liquidity"`
+	FDV           float64 `json:"fdv"`
+	MarketCap     float64 `json:"marketCap"`
+	PairCreatedAt int64   `json:"pairCreatedAt"`
+	Info          struct {
+		ImageURL string `json:"imageUrl"`
+		Websites []struct {
+			URL string `json:"url"`
+		} `json:"websites"`
+		Socials []struct {
+			Platform string `json:"platform"`
+			Handle   string `json:"handle"`
+		} `json:"socials"`
+	} `json:"info"`
+	Boosts struct {
+		Active int `json:"active"`
+	} `json:"boosts"`
+	Volume struct {
+		H24 float64 `json:"h24"`
+		H6  float64 `json:"h6"`
+		H1  float64 `json:"h1"`
+		M5  float64 `json:"m5"`
+	} `json:"volume"`
+	PriceChange struct {
+		H24 float64 `json:"h24"`
+		H6  float64 `json:"h6"`
+		H1  float64 `json:"h1"`
+		M5  float64 `json:"m5"`
+	} `json:"priceChange"`
+	Transactions struct {
+		M5 struct {
+			Buys  uint64 `json:"buys"`
+			Sells uint64 `json:"sells"`
+		} `json:"m5"`
+		H6 struct {
+			Buys  uint64 `json:"buys"`
+			Sells uint64 `json:"sells"`
+		} `json:"h6"`
+		H1 struct {
+			Buys  uint64 `json:"buys"`
+			Sells uint64 `json:"sells"`
+		} `json:"h1"`
+		H24 struct {
+			Buys  uint64 `json:"buys"`
+			Sells uint64 `json:"sells"`
+		} `json:"h24"`
+	} `json:"txns"`
 }
 
 type TokenPairs struct {
